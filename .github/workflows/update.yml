@@ -1,0 +1,29 @@
+name: 'update'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions: write-all
+
+jobs:
+  update:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'denoland/setup-deno@v1'
+        with:
+          deno-version: 'v1.x'
+
+      - name: 'Update List'
+        run: deno run -A .github/update.ts
+
+      - name: 'Commit Changes'
+        run: |
+          git config --global user.name 'GitHub'
+          git config --global user.email 'noreply@github.com'
+          git commit -am "refactor: update (automated)"
+          git push
